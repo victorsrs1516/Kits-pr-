@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kits Pró</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html{ scroll-behavior:smooth; }
+
+    body{
+      font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+      background:#fff;color:#000;
+    }
+
+    /* =========================
+       HEADER (fixo sempre)
+    ========================== */
+    .header{
+      position: sticky;
+      top: 0;
+      z-index: 9997;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(20,26,58,.08);
+      box-shadow: 0 12px 34px rgba(20,26,58,.08);
+    }
+
+    .container{
+      max-width:1200px;margin:0 auto;padding:16px 24px;
+      display:flex;align-items:center;justify-content:space-between;gap:20px
+    }
+    .logo{display:flex;align-items:center;gap:10px;font-weight:800;color:#141a3a}
+    .logo img{width:32px;height:32px;border-radius:10px}
+
+    .nav{display:flex;gap:28px}
+    .nav a{
+      text-decoration:none;
+      color: rgba(20,26,58,.62);
+      font-size:15px;
+      font-weight:700;
+      transition: color .15s ease, opacity .15s ease;
+    }
+    .nav a:hover{ color: rgba(20,26,58,.92); }
+
+    .actions{display:flex;gap:14px;align-items:center}
+
+    .btn-outline{
+      padding:8px 16px;border:1px solid #ddd;border-radius:999px;
+      text-decoration:none;color:#333;font-size:14px;font-weight:800;
+      background:#fff;
+      display:inline-flex;align-items:center;justify-content:center;
+    }
+
+    /* =========================
+       ✅ GRADIENTE ÚNICO
+    ========================== */
+    :root{
+      --btnA:#ff9a57; /* laranja */
+      --btnB:#ff5fa2; /* rosa */
+    }
+
+    .btn-primary{
+      padding:8px 18px;border-radius:999px;
+      background:linear-gradient(90deg,var(--btnA),var(--btnB));
+      color:#fff;text-decoration:none;font-size:14px;font-weight:900;
+      border:0;
+      display:inline-flex;align-items:center;justify-content:center;
+      box-shadow: 0 18px 50px rgba(255,95,162,.28);
+      transition: transform .12s ease, filter .12s ease;
+    }
+    .btn-primary:hover{ transform: translateY(-1px); filter: brightness(1.03); }
+    .btn-primary:active{ transform: translateY(0) scale(.99); }
+
+    /* =========================
+       FLAGS (idiomas)
+    ========================== */
+    .kp-flags{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-left:10px;
+    }
+
+    .kp-flag{
+      width:28px;
+      height:18px;
+      border-radius:4px;
+      border:1px solid rgba(20,26,58,.10);
+      overflow:hidden;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background:#fff;
+      cursor:pointer;
+      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+    }
+
+    .kp-flag:hover{
+      transform: translateY(-1px);
+      border-color: rgba(124,92,255,.35);
+      box-shadow: 0 10px 22px rgba(20,26,58,.10);
+    }
+
+    .kp-flag img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    /* =========================
+       MENU MOBILE + BOTÃO 3 PONTOS
+    ========================== */
+    .nav--desktop, .actions--desktop{display:flex}
+    .burger{display:none}
+
+    .burger{
+      width:44px;height:44px;border-radius:14px;
+      border:1px solid rgba(20,26,58,.10);
+      background:#ffffff;
+      display:grid;place-items:center;
+      cursor:pointer;
+      box-shadow: 0 10px 26px rgba(20, 26, 58, .08);
+      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+    }
+    .burger:hover{
+      transform: translateY(-1px);
+      border-color: rgba(124,92,255,.35);
+      box-shadow: 0 16px 44px rgba(20, 26, 58, .12);
+    }
+    .burger:active{ transform: translateY(0px) scale(.98); }
+
+    .burger--dots{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+    }
+    .burger--dots .dot{
+      width:6px;height:6px;border-radius:999px;
+      background:#141a3a;
+      opacity:.85;
+    }
+    body.menu-open .burger{
+      border-color: rgba(124,92,255,.45);
+      box-shadow: 0 18px 54px rgba(124,92,255,.18);
+    }
+
+    .kp-overlay{
+      position:fixed; inset:0;
+      background:rgba(10,10,20,.35);
+      opacity:0; pointer-events:none;
+      transition:opacity .18s ease;
+      z-index:9996;
+    }
+    body.menu-open .kp-overlay{
+      opacity:1;
+      pointer-events:auto;
+    }
+
+    .kp-mobileMenu{
+      position:absolute;
+      left:0; right:0;
+      top:100%;
+      z-index:9999;
+      background: rgba(255,255,255,.96);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(20,26,58,.08);
+      box-shadow: 0 18px 44px rgba(20,26,58,.10);
+
+      overflow:hidden;
+      max-height:0;
+      opacity:0;
+      transform: translateY(-6px);
+      transition: max-height .22s ease, opacity .18s ease, transform .18s ease;
+    }
+
+    body.menu-open .kp-mobileMenu{
+      max-height: 560px;
+      opacity:1;
+      transform: translateY(0);
+    }
+
+    .kp-mobileMenu__links{
+      display:flex;flex-direction:column;gap:10px;
+      padding:14px 16px 10px;
+    }
+    .kp-mobileMenu__links a{
+      text-decoration:none;
+      color:#141a3a;
+      font-weight:900;
+      padding:12px 12px;
+      border-radius:12px;
+      background:#f6f7ff;
+      border:1px solid rgba(20,26,58,.06);
+    }
+
+    .kp-mobileMenu__actions{
+      display:grid;gap:10px;
+      padding: 12px 16px 16px;
+      border-top:1px solid rgba(20,26,58,.06);
+    }
+    .kp-mobileMenu__actions .btn-outline,
+    .kp-mobileMenu__actions .btn-primary{
+      height:48px;
+    }
+
+    @media (max-width: 900px){
+      .nav--desktop, .actions--desktop{display:none}
+      .burger{display:grid}
+      .container{padding:14px 16px}
+      .kp-flags{ display:none; }
+    }
+
+    /* =========================
+       HERO
+    ========================== */
+    :root{
+      --p:#7c5cff;
+      --p2:#a78bfa;
+      --a:#ff5fa2;
+      --shadow:0 30px 80px rgba(0,0,0,.35);
+      --containerHero:1140px;
+    }
+
+    .kp-hero{
+      padding:76px 20px 66px;
+      color:#fff;
+      overflow:hidden;
+
+      background:
+        radial-gradient(900px 520px at 15% 20%, rgba(255,255,255,.14), transparent 60%),
+        radial-gradient(700px 420px at 85% 30%, rgba(255,255,255,.10), transparent 62%),
+        linear-gradient(135deg,
+          #6f00ff 0%,
+          #8a2cff 35%,
+          #b44cff 60%,
+          #ff5fa2 78%,
+          #ff9a57 100%
+        );
+    }
+
+    .kp-hero__wrap{
+      max-width:var(--containerHero);margin:0 auto;
+      display:grid;grid-template-columns:1.05fr .95fr;
+      gap:38px;align-items:center
+    }
+
+    .kp-hero__pill{
+      display:inline-flex;align-items:center;gap:10px;
+      padding:10px 12px;border-radius:999px;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.2);
+      font-size:13px;font-weight:900
+    }
+    .kp-hero__pillDot{
+      width:10px;height:10px;border-radius:50%;
+      background:linear-gradient(90deg,var(--p),var(--a))
+    }
+
+    .kp-hero__title{
+      margin-top:18px;
+      font-size:clamp(36px,4.5vw,64px);
+      line-height:1.05;
+      letter-spacing:-0.03em;
+      font-weight:900;
+    }
+    .kp-hero__highlight{
+      background:linear-gradient(90deg,var(--p2),var(--a));
+      -webkit-background-clip:text;background-clip:text;color:transparent
+    }
+
+    .kp-hero__subtitle{
+      margin-top:14px;font-size:18px;line-height:1.7;
+      color:rgba(255,255,255,.85);max-width:60ch
+    }
+
+    .kp-hero__cta{margin-top:24px;display:flex;gap:12px;flex-wrap:wrap}
+    .kp-btn{
+      padding:12px 16px;border-radius:999px;
+      font-weight:900;font-size:14px;text-decoration:none;
+      display:inline-flex;align-items:center;justify-content:center;
+      transition: transform .12s ease, filter .12s ease;
+    }
+
+    .kp-btn--primary{
+      background:linear-gradient(90deg,var(--btnA),var(--btnB));
+      color:#fff;
+      box-shadow: 0 18px 50px rgba(255,95,162,.28);
+    }
+    .kp-btn--primary:hover{ transform: translateY(-1px); filter: brightness(1.03); }
+    .kp-btn--primary:active{ transform: translateY(0) scale(.99); }
+
+    .kp-btn--ghost{
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.25);
+      color:#fff
+    }
+
+    .kp-videoCard{
+      background:rgba(12,16,28,.72);
+      border:1px solid rgba(255,255,255,.22);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    /* ✅ PATCH: offset para ancorar no vídeo sem ficar atrás do header */
+    #demo{ scroll-margin-top: 110px; }
+
+    .kp-videoTop{
+      padding:14px 16px;
+      border-bottom:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.08);
+      font-weight:900;
+      color:#fff;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+    .kp-videoTag{
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      color:#0b0f1a;
+      background: linear-gradient(90deg, rgba(167,139,250,.9), rgba(255,95,162,.85));
+    }
+    .kp-videoWrap{ background:#0b0f1a; }
+    .kp-video{
+      width:100%;
+      height:auto;
+      display:block;
+      aspect-ratio: 16 / 9;
+      background:#0b0f1a;
+    }
+
+    @media(max-width:1000px){
+      .kp-hero__wrap{grid-template-columns:1fr}
+    }
+
+    /* =========================
+       ... (SEU CSS RESTANTE IGUAL)
+       (não mexi em mais nada)
+    ========================== */
+
+    /* =========================
+       MOBILE FIX
+    ========================== */
+    img, video { max-width: 100%; height: auto; }
+    body { overflow-x: hidden; }
+
+    @media (max-width: 520px){
+      .container{ padding: 12px 14px; gap: 12px; }
+      .logo{ font-size: 15px; }
+      .logo img{ width: 28px; height: 28px; border-radius: 9px; }
+
+      .kp-mobileMenu__links a{
+        font-size: 16px;
+        padding: 13px 12px;
+      }
+      .kp-mobileMenu__actions .btn-outline,
+      .kp-mobileMenu__actions .btn-primary{
+        width: 100%;
+      }
+      .kp-hero{
+        background: radial-gradient(
+            800px 400px at 80% 20%,
+            rgba(255,95,162,.25),
+            transparent 60%
+          ),
+          linear-gradient(180deg, #5b21b6, #4c1d95);
+      }
+
+      .kp-hero__cta{ flex-direction: column; }
+      .kp-hero__cta .kp-btn{
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+      }
+
+      .kp-videoCard{ border-radius: 18px; }
+      .kp-videoTop{ flex-wrap: wrap; gap: 8px; }
+      .kp-videoTag{ font-size: 11px; }
+    }
+
+    /* =========================================
+       PATCH: unifica TODOS os botões coloridos
+    ========================================= */
+    :root{ --btnShadow: 0 18px 50px rgba(255,95,162,.28); }
+
+    .btn-primary,
+    .kp-btn--primary{
+      background: linear-gradient(90deg, var(--btnA), var(--btnB)) !important;
+      color:#fff !important;
+      border:0 !important;
+      border-radius: 999px !important;
+      box-shadow: var(--btnShadow) !important;
+      transition: transform .12s ease, filter .12s ease !important;
+      display:inline-flex !important;
+      align-items:center !important;
+      justify-content:center !important;
+      font-weight:900 !important;
+      text-decoration:none !important;
+    }
+
+    .btn-primary:hover,
+    .kp-btn--primary:hover{
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+    }
+    .btn-primary:active,
+    .kp-btn--primary:active{
+      transform: translateY(0) scale(.99);
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="container">
+    <div class="logo">
+      <img src="img/5673-pt_BR-logo600x600.png" alt="Kits Pró"> Kits Pró
+    </div>
+
+    <nav class="nav nav--desktop">
+      <a href="#recursos">Recursos</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#resultados">Resultados</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+
+    <div class="actions actions--desktop">
+      <!-- ✅ PATCH: agora o Ver demo vai pro vídeo -->
+      <a class="btn-outline" href="#demo">Ver demo</a>
+      <a class="btn-primary" href="#">Entrar</a>
+    </div>
+
+    <div class="kp-flags actions--desktop" aria-label="Idiomas">
+      <button class="kp-flag" type="button" aria-label="Português (Brasil)">
+        <img src="img/bandeira brasil.png" alt="Brasil">
+      </button>
+
+      <button class="kp-flag" type="button" aria-label="Español (España)">
+        <img src="img/bandeira esp.webp" alt="Espanha">
+      </button>
+    </div>
+
+    <button class="burger burger--dots" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </button>
+  </div>
+
+  <aside class="kp-mobileMenu" id="mobileMenu" aria-hidden="true">
+    <nav class="kp-mobileMenu__links">
+      <a href="#recursos">Recursos</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#resultados">Resultados</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+
+    <div class="kp-mobileMenu__actions">
+      <!-- já estava certo ✅ -->
+      <a class="btn-outline" href="#demo">Ver demo</a>
+      <a class="btn-primary" href="#">Entrar</a>
+    </div>
+  </aside>
+</header>
+
+<div class="kp-overlay" data-overlay></div>
+
+<!-- HERO -->
+<section class="kp-hero">
+  <div class="kp-hero__wrap">
+
+    <div>
+      <div class="kp-hero__pill">
+        <span class="kp-hero__pillDot"></span>
+        + mais itens por pedido • estoque sincronizado • kits em minutos
+      </div>
+
+      <h1 class="kp-hero__title">
+        Transforme o ticket médio<br>
+        com <span class="kp-hero__highlight">Kits Pró</span>.
+      </h1>
+
+      <p class="kp-hero__subtitle">
+        Crie combos com desconto, agrupe produtos em um único item e mantenha o estoque inteligente.
+      </p>
+
+      <div class="kp-hero__cta">
+        <a
+          class="kp-btn kp-btn--primary"
+          href="https://www.nuvemshop.com.br/loja-aplicativos-nuvem/kits-pro?q=kits%20pro"
+          target="_blank"
+          rel="noopener"
+        >
+          Instalar na Nuvemshop
+        </a>
+
+        <a class="kp-btn kp-btn--ghost" href="https://kitspro.com.br/login" target="_blank" rel="noopener">Ver demo</a>
+      </div>
+    </div>
+
+    <!-- VÍDEO NO HERO -->
+    <div class="kp-videoCard" id="demo">
+      <div class="kp-videoTop">
+        <span>Veja o Kits Pró em ação</span>
+        <span class="kp-videoTag">demo</span>
+      </div>
+
+      <div class="kp-videoWrap">
+        <!-- ✅ PATCH: id no vídeo pra dar play -->
+        <video id="kpVideo" class="kp-video" controls preload="metadata" playsinline>
+          <source src="img/videokits.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- (resto do seu HTML continua igual) -->
+
+<footer class="kp-footer">
+  <div class="kp-footer__wrap">
+    <div class="kp-footer__copy">© 2026 Cake Digital — Kits Pró</div>
+
+    <nav class="kp-footer__links" aria-label="Links do rodapé">
+      <a href="#" id="link-termos">Termos</a>
+      <a href="#" id="link-privacidade">Privacidade</a>
+      <a
+        href="https://wa.me/554198869524?text=Oi!%20Quero%20suporte%20do%20Kits%20Pr%C3%B3."
+        target="_blank"
+        rel="noopener"
+      >
+        Falar com o suporte
+      </a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+  // MENU MOBILE
+  (function(){
+    const burger = document.querySelector('.burger');
+    const menu = document.getElementById('mobileMenu');
+    const overlay = document.querySelector('[data-overlay]');
+
+    if(!burger || !menu || !overlay) return;
+
+    function openMenu(){
+      document.body.classList.add('menu-open');
+      burger.setAttribute('aria-expanded', 'true');
+      menu.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeMenu(){
+      document.body.classList.remove('menu-open');
+      burger.setAttribute('aria-expanded', 'false');
+      menu.setAttribute('aria-hidden', 'true');
+    }
+
+    burger.addEventListener('click', () => {
+      const isOpen = document.body.classList.contains('menu-open');
+      isOpen ? closeMenu() : openMenu();
+    });
+
+    overlay.addEventListener('click', closeMenu);
+
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape') closeMenu();
+    });
+
+    menu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+
+    window.addEventListener('resize', () => {
+      if(window.innerWidth > 900) closeMenu();
+    });
+  })();
+
+  // CARROSSEL DE DEPOIMENTOS
+  (function(){
+    const root = document.querySelector('[data-testimonials]');
+    if(!root) return;
+
+    const track = root.querySelector('.kp-tTrack');
+    const slides = Array.from(root.querySelectorAll('.kp-tSlide'));
+    const btnPrev = root.querySelector('[data-prev]');
+    const btnNext = root.querySelector('[data-next]');
+    const dotsWrap = root.querySelector('[data-dots]');
+
+    if(!track || slides.length <= 1) return;
+
+    let index = 0;
+    let autoplay = true;
+    let timer = null;
+    const interval = 5500;
+
+    function clamp(i){
+      if(i < 0) return slides.length - 1;
+      if(i >= slides.length) return 0;
+      return i;
+    }
+
+    function renderDots(){
+      dotsWrap.innerHTML = '';
+      slides.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'kp-dot' + (i === index ? ' is-active' : '');
+        dot.setAttribute('aria-label', 'Ir para depoimento ' + (i + 1));
+        dot.addEventListener('click', () => goTo(i, true));
+        dotsWrap.appendChild(dot);
+      });
+    }
+
+    function update(){
+      track.style.transform = `translateX(-${index * 100}%)`;
+      const dots = Array.from(dotsWrap.querySelectorAll('.kp-dot'));
+      dots.forEach((d, i) => d.classList.toggle('is-active', i === index));
+    }
+
+    function goTo(i, userAction){
+      index = clamp(i);
+      update();
+      if(userAction) restartAutoplay();
+    }
+
+    function next(userAction){ goTo(index + 1, userAction); }
+    function prev(userAction){ goTo(index - 1, userAction); }
+
+    function stopAutoplay(){
+      if(timer) clearInterval(timer);
+      timer = null;
+    }
+
+    function startAutoplay(){
+      if(!autoplay) return;
+      stopAutoplay();
+      timer = setInterval(() => next(false), interval);
+    }
+
+    function restartAutoplay(){
+      stopAutoplay();
+      startAutoplay();
+    }
+
+    btnNext && btnNext.addEventListener('click', () => next(true));
+    btnPrev && btnPrev.addEventListener('click', () => prev(true));
+
+    root.addEventListener('mouseenter', () => { autoplay = false; stopAutoplay(); });
+    root.addEventListener('mouseleave', () => { autoplay = true; startAutoplay(); });
+
+    root.addEventListener('keydown', (e) => {
+      if(e.key === 'ArrowRight') next(true);
+      if(e.key === 'ArrowLeft') prev(true);
+    });
+
+    renderDots();
+    update();
+    startAutoplay();
+  })();
+
+  // ✅ PATCH: Ir para o vídeo e dar play automático
+  (function(){
+    const demoLinks = document.querySelectorAll('a[href="#demo"]');
+    const video = document.getElementById('kpVideo');
+
+    if(!demoLinks.length || !video) return;
+
+    function playVideoSoon(){
+      setTimeout(() => {
+        try{
+          video.muted = true; // ajuda no autoplay
+          video.play().catch(() => {});
+        }catch(e){}
+      }, 450);
+    }
+
+    demoLinks.forEach(link => link.addEventListener('click', playVideoSoon));
+  })();
+</script>
+
+</body>
+</html>
